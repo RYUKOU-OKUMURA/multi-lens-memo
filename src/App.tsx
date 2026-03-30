@@ -4,6 +4,9 @@ import { loadLenses } from './lib/lenses'
 import { useStreamingLens } from './hooks/useStreamingLens'
 import ContextPanel from './components/ContextPanel'
 import LensGrid from './components/LensGrid'
+import UserMemo from './components/UserMemo'
+import MemoToggle from './components/MemoToggle'
+import ExportButton from './components/ExportButton'
 
 function buildInitialState(): AppState {
   const lenses = loadLenses()
@@ -71,16 +74,7 @@ export default function App() {
           >
             レンズ設定
           </button>
-          <button
-            onClick={toggleSelfMemo}
-            className={`px-3 py-1 text-xs rounded transition-colors ${
-              state.showSelfMemo
-                ? 'bg-rose-900/60 text-rose-300 hover:bg-rose-900'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-            }`}
-          >
-            自分メモ {state.showSelfMemo ? 'ON' : 'OFF'}
-          </button>
+          <MemoToggle isOn={state.showSelfMemo} onToggle={toggleSelfMemo} />
           <button
             onClick={handleGenerate}
             disabled={isGenerating || state.context.trim().length === 0}
@@ -92,30 +86,22 @@ export default function App() {
           >
             {isGenerating ? '生成中…' : '生成'}
           </button>
-          <button
-            disabled
-            className="px-3 py-1 text-xs rounded bg-gray-800 text-gray-500 cursor-not-allowed"
-          >
-            MD DL
-          </button>
+          <ExportButton state={state} />
         </div>
       </header>
 
       {/* メインカラムエリア */}
       <main className="flex flex-1 overflow-hidden">
         <ContextPanel value={state.context} onChange={setContext} />
-        <LensGrid
-          lenses={state.lenses}
-          outputs={state.outputs}
-          showSelfMemo={state.showSelfMemo}
-          selfMemo={state.selfMemo}
-          onSelfMemoChange={setSelfMemo}
-        />
+        {state.showSelfMemo && (
+          <UserMemo value={state.selfMemo} onChange={setSelfMemo} />
+        )}
+        <LensGrid lenses={state.lenses} outputs={state.outputs} />
       </main>
 
       {/* ステータスバー */}
       <footer className="flex-none flex items-center gap-4 px-4 py-1 bg-gray-900 border-t border-gray-800 text-xs text-gray-600">
-        <span>Phase 3-A — SSEストリーミング</span>
+        <span>Phase 3-C — 自分メモ + MDエクスポート</span>
         <span className="text-gray-700">|</span>
         <span>
           レンズ {state.lenses.length}本
