@@ -1,0 +1,12 @@
+# ローカル開発用環境変数 (.dev.vars.example)
+# このファイルをコピーして .dev.vars を作成し、実際の値を入力してください。
+# .dev.vars は .gitignore に含まれているため Git にはコミットされません。
+
+# 必須: 智谱AI (ZhipuAI) の API キー
+ZAI_API_KEY=your_api_key_here
+
+# オプション: API ベース URL（デフォルト: https://open.bigmodel.cn/api/paas/v4）
+# ZAI_API_BASE_URL=https://open.bigmodel.cn/api/paas/v4
+
+# オプション: 使用するモデル名（デフォルト: glm-4-flash）
+# ZAI_MODEL=glm-4-flash
