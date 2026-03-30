@@ -83,7 +83,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return jsonError(`GLM API への接続に失敗しました: ${message}`, 502);
   }
 
-  // --- アップストリームエラーをそのまま返す ---
+  // --- アップストリームエラーをそのまま返す（body はここで一度だけ消費） ---
   if (!upstream.ok) {
     const errorText = await upstream.text();
     return new Response(errorText, {
@@ -95,8 +95,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     });
   }
 
+  const streamBody = upstream.body;
+  if (!streamBody) {
+    return jsonError("GLM API からストリームボディを取得できませんでした", 502);
+  }
+
   // --- SSE ストリームをフロントにそのまま中継 ---
-  return new Response(upstream.body, {
+  return new Response(streamBody, {
     status: 200,
     headers: {
       ...CORS_HEADERS,

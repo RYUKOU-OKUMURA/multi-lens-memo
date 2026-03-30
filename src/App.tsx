@@ -23,7 +23,7 @@ function buildInitialState(): AppState {
 }
 
 export default function App() {
-  const [state, setState] = useState<AppState>(buildInitialState)
+  const [state, setState] = useState<AppState>(() => buildInitialState())
   const [showLensConfig, setShowLensConfig] = useState(false)
 
   function setContext(context: string) {
