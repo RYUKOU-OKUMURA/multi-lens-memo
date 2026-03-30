@@ -1,7 +1,39 @@
-// Phase 1 骨格: レイアウト確認用プレースホルダー
-// Phase 2 以降でコンポーネントに分割する
+import { useState } from 'react'
+import type { AppState } from './types'
+import { loadLenses } from './lib/lenses'
+import ContextPanel from './components/ContextPanel'
+import LensGrid from './components/LensGrid'
+
+function buildInitialState(): AppState {
+  const lenses = loadLenses()
+  return {
+    context: '',
+    selfMemo: '',
+    showSelfMemo: false,
+    lenses,
+    outputs: Object.fromEntries(
+      lenses.map((l) => [l.id, { lensId: l.id, content: '', status: 'idle' as const }]),
+    ),
+  }
+}
 
 export default function App() {
+  const [state, setState] = useState<AppState>(buildInitialState)
+
+  function setContext(context: string) {
+    setState((s) => ({ ...s, context }))
+  }
+
+  function setSelfMemo(selfMemo: string) {
+    setState((s) => ({ ...s, selfMemo }))
+  }
+
+  function toggleSelfMemo() {
+    setState((s) => ({ ...s, showSelfMemo: !s.showSelfMemo }))
+  }
+
+  const isGenerating = Object.values(state.outputs).some((o) => o.status === 'streaming')
+
   return (
     <div className="flex flex-col h-full">
       {/* ヘッダー */}
@@ -18,16 +50,24 @@ export default function App() {
             レンズ設定
           </button>
           <button
-            disabled
-            className="px-3 py-1 text-xs rounded bg-gray-800 text-gray-500 cursor-not-allowed"
+            onClick={toggleSelfMemo}
+            className={`px-3 py-1 text-xs rounded transition-colors ${
+              state.showSelfMemo
+                ? 'bg-rose-900/60 text-rose-300 hover:bg-rose-900'
+                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+            }`}
           >
-            自分メモ ON
+            自分メモ {state.showSelfMemo ? 'ON' : 'OFF'}
           </button>
           <button
-            disabled
-            className="px-3 py-1 text-xs rounded bg-blue-700 text-blue-100 cursor-not-allowed"
+            disabled={isGenerating || state.context.trim().length === 0}
+            className={`px-3 py-1 text-xs rounded transition-colors ${
+              isGenerating || state.context.trim().length === 0
+                ? 'bg-blue-900/40 text-blue-500 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-500 cursor-pointer'
+            }`}
           >
-            生成
+            {isGenerating ? '生成中…' : '生成'}
           </button>
           <button
             disabled
@@ -39,40 +79,31 @@ export default function App() {
       </header>
 
       {/* メインカラムエリア */}
-      <main className="flex flex-1 overflow-hidden gap-px bg-gray-800">
-        {/* コンテキスト（左端固定） */}
-        <section className="flex flex-col w-64 flex-none bg-gray-950">
-          <div className="flex-none px-3 py-2 text-xs font-semibold text-gray-400 border-b border-gray-800 uppercase tracking-wider">
-            コンテキスト
-          </div>
-          <div className="flex-1 overflow-y-auto p-3">
-            <textarea
-              className="w-full h-full bg-transparent text-sm text-gray-300 resize-none outline-none placeholder-gray-600"
-              placeholder="素材テキストをここに貼り付ける…"
-            />
-          </div>
-        </section>
-
-        {/* 視点カラム × 4（プレースホルダー） */}
-        {(['当事者／観客', 'ディレクター', 'プロデューサー', '歴史家／文脈'] as const).map(
-          (lens) => (
-            <section key={lens} className="flex flex-col flex-1 bg-gray-950 min-w-0">
-              <div className="flex-none px-3 py-2 text-xs font-semibold text-gray-400 border-b border-gray-800 truncate">
-                {lens}
-              </div>
-              <div className="flex-1 overflow-y-auto p-3">
-                <p className="text-xs text-gray-700 italic">
-                  生成ボタンで AI メモがここにストリーミング表示されます
-                </p>
-              </div>
-            </section>
-          ),
-        )}
+      <main className="flex flex-1 overflow-hidden">
+        <ContextPanel value={state.context} onChange={setContext} />
+        <LensGrid
+          lenses={state.lenses}
+          outputs={state.outputs}
+          showSelfMemo={state.showSelfMemo}
+          selfMemo={state.selfMemo}
+          onSelfMemoChange={setSelfMemo}
+        />
       </main>
 
       {/* ステータスバー */}
-      <footer className="flex-none px-4 py-1 bg-gray-900 border-t border-gray-800 text-xs text-gray-600">
-        Phase 1 — セットアップ完了
+      <footer className="flex-none flex items-center gap-4 px-4 py-1 bg-gray-900 border-t border-gray-800 text-xs text-gray-600">
+        <span>Phase 2-B — コアUI骨格</span>
+        <span className="text-gray-700">|</span>
+        <span>
+          レンズ {state.lenses.length}本
+          {state.showSelfMemo && ' + 自分メモ'}
+        </span>
+        {state.context.length > 0 && (
+          <>
+            <span className="text-gray-700">|</span>
+            <span>素材 {state.context.length.toLocaleString()} 字</span>
+          </>
+        )}
       </footer>
     </div>
   )
