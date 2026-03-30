@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply h-full;
+  }
+
+  body {
+    @apply h-full bg-gray-950 text-gray-100 font-sans antialiased;
+  }
+
+  #root {
+    @apply h-full flex flex-col;
+  }
+}
+
+@layer utilities {
+  /* カラム独立スクロール用 */
+  .column-scroll {
+    @apply overflow-y-auto scrollbar-thin;
+  }
+}
+
+/* カスタムスクロールバー（Webkit） */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500;
+}
