@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import type { AppState } from './types'
+import { useCallback, useState } from 'react'
+import type { AppState, LensOutput } from './types'
 import { loadLenses } from './lib/lenses'
+import { useStreamingLens } from './hooks/useStreamingLens'
 import ContextPanel from './components/ContextPanel'
 import LensGrid from './components/LensGrid'
 
@@ -32,7 +33,28 @@ export default function App() {
     setState((s) => ({ ...s, showSelfMemo: !s.showSelfMemo }))
   }
 
+  const setOutput = useCallback(
+    (lensId: string, updater: (prev: LensOutput) => LensOutput) => {
+      setState((s) => ({
+        ...s,
+        outputs: {
+          ...s.outputs,
+          [lensId]: updater(s.outputs[lensId] ?? { lensId, content: '', status: 'idle' }),
+        },
+      }))
+    },
+    [],
+  )
+
+  const { generateAll } = useStreamingLens(setOutput)
+
   const isGenerating = Object.values(state.outputs).some((o) => o.status === 'streaming')
+
+  function handleGenerate() {
+    if (!isGenerating && state.context.trim().length > 0) {
+      generateAll(state.lenses, state.context)
+    }
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -60,6 +82,7 @@ export default function App() {
             自分メモ {state.showSelfMemo ? 'ON' : 'OFF'}
           </button>
           <button
+            onClick={handleGenerate}
             disabled={isGenerating || state.context.trim().length === 0}
             className={`px-3 py-1 text-xs rounded transition-colors ${
               isGenerating || state.context.trim().length === 0
@@ -92,7 +115,7 @@ export default function App() {
 
       {/* ステータスバー */}
       <footer className="flex-none flex items-center gap-4 px-4 py-1 bg-gray-900 border-t border-gray-800 text-xs text-gray-600">
-        <span>Phase 2-B — コアUI骨格</span>
+        <span>Phase 3-A — SSEストリーミング</span>
         <span className="text-gray-700">|</span>
         <span>
           レンズ {state.lenses.length}本
