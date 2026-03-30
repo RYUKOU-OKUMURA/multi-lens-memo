@@ -1,3 +1,5 @@
+import TextInput from './TextInput'
+
 interface ContextPanelProps {
   value: string
   onChange: (value: string) => void
@@ -17,12 +19,12 @@ export default function ContextPanel({ value, onChange }: ContextPanelProps) {
         )}
       </div>
       <div className="flex-1 overflow-y-auto">
-        <textarea
+        <TextInput
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full h-full min-h-full bg-transparent text-sm text-gray-300 resize-none outline-none placeholder-gray-700 p-3 leading-relaxed"
-          placeholder="素材テキストをここに貼り付ける…&#10;&#10;文字起こし・Markdown など"
-          spellCheck={false}
+          onChange={onChange}
+          placeholder={'素材テキストをここに貼り付ける…\n\n文字起こし・Markdown など'}
+          className="p-3"
+          aria-label="コンテキスト素材入力"
         />
       </div>
     </section>

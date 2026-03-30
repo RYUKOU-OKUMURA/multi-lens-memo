@@ -71,6 +71,13 @@ export default function App() {
 
   function handleGenerate() {
     if (!isGenerating && state.context.trim().length > 0) {
+      // 出力をリセットしてから並列ストリーミング開始
+      setState((s) => ({
+        ...s,
+        outputs: Object.fromEntries(
+          s.lenses.map((l) => [l.id, { lensId: l.id, content: '', status: 'idle' as const }]),
+        ),
+      }))
       generateAll(state.lenses, state.context)
     }
   }
@@ -86,7 +93,12 @@ export default function App() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowLensConfig(true)}
-            className="px-3 py-1 text-xs rounded bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200 transition-colors"
+            disabled={isGenerating}
+            className={`px-3 py-1 text-xs rounded transition-colors ${
+              isGenerating
+                ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200 cursor-pointer'
+            }`}
           >
             レンズ設定
           </button>
@@ -126,7 +138,7 @@ export default function App() {
 
       {/* ステータスバー */}
       <footer className="flex-none flex items-center gap-4 px-4 py-1 bg-gray-900 border-t border-gray-800 text-xs text-gray-600">
-        <span>Phase 3-B/C — レンズ設定 + 自分メモ + MDエクスポート</span>
+        <span>Phase 4 — 並列4視点ストリーミング</span>
         <span className="text-gray-700">|</span>
         <span>
           レンズ {state.lenses.length}本
@@ -136,6 +148,12 @@ export default function App() {
           <>
             <span className="text-gray-700">|</span>
             <span>素材 {state.context.length.toLocaleString()} 字</span>
+          </>
+        )}
+        {isGenerating && (
+          <>
+            <span className="text-gray-700">|</span>
+            <span className="text-blue-500 animate-pulse">ストリーミング中…</span>
           </>
         )}
       </footer>

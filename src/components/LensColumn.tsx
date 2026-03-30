@@ -16,6 +16,11 @@ export default function LensColumn({ lens, output }: LensColumnProps) {
         {output.status === 'streaming' && (
           <span className="flex-none w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
         )}
+        {output.status === 'done' && (
+          <span className="flex-none text-xs text-gray-700">
+            {output.content.length.toLocaleString()} 字
+          </span>
+        )}
         {output.status === 'error' && (
           <span className="flex-none text-xs text-red-400">エラー</span>
         )}
