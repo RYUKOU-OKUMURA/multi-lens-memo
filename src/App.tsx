@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import type { AppState, LensOutput } from './types'
+import type { AppState, Lens, LensOutput } from './types'
 import { loadLenses } from './lib/lenses'
 import { useStreamingLens } from './hooks/useStreamingLens'
 import ContextPanel from './components/ContextPanel'
@@ -7,6 +7,7 @@ import LensGrid from './components/LensGrid'
 import UserMemo from './components/UserMemo'
 import MemoToggle from './components/MemoToggle'
 import ExportButton from './components/ExportButton'
+import LensConfig from './components/LensConfig'
 
 function buildInitialState(): AppState {
   const lenses = loadLenses()
@@ -23,6 +24,7 @@ function buildInitialState(): AppState {
 
 export default function App() {
   const [state, setState] = useState<AppState>(buildInitialState)
+  const [showLensConfig, setShowLensConfig] = useState(false)
 
   function setContext(context: string) {
     setState((s) => ({ ...s, context }))
@@ -51,6 +53,20 @@ export default function App() {
 
   const { generateAll } = useStreamingLens(setOutput)
 
+  function handleLensesSaved(lenses: Lens[]) {
+    setState((s) => ({
+      ...s,
+      lenses,
+      // 既存の出力は保持しつつ、新しいレンズ分は idle で初期化
+      outputs: Object.fromEntries(
+        lenses.map((l) => [
+          l.id,
+          s.outputs[l.id] ?? { lensId: l.id, content: '', status: 'idle' as const },
+        ]),
+      ),
+    }))
+  }
+
   const isGenerating = Object.values(state.outputs).some((o) => o.status === 'streaming')
 
   function handleGenerate() {
@@ -69,8 +85,8 @@ export default function App() {
         </h1>
         <div className="flex items-center gap-2">
           <button
-            disabled
-            className="px-3 py-1 text-xs rounded bg-gray-800 text-gray-500 cursor-not-allowed"
+            onClick={() => setShowLensConfig(true)}
+            className="px-3 py-1 text-xs rounded bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200 transition-colors"
           >
             レンズ設定
           </button>
@@ -99,9 +115,18 @@ export default function App() {
         <LensGrid lenses={state.lenses} outputs={state.outputs} />
       </main>
 
+      {/* レンズ設定モーダル */}
+      {showLensConfig && (
+        <LensConfig
+          lenses={state.lenses}
+          onSave={handleLensesSaved}
+          onClose={() => setShowLensConfig(false)}
+        />
+      )}
+
       {/* ステータスバー */}
       <footer className="flex-none flex items-center gap-4 px-4 py-1 bg-gray-900 border-t border-gray-800 text-xs text-gray-600">
-        <span>Phase 3-C — 自分メモ + MDエクスポート</span>
+        <span>Phase 3-B/C — レンズ設定 + 自分メモ + MDエクスポート</span>
         <span className="text-gray-700">|</span>
         <span>
           レンズ {state.lenses.length}本
