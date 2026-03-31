@@ -138,7 +138,7 @@ export default function App() {
 
       {/* ステータスバー */}
       <footer className="flex-none flex items-center gap-4 px-4 py-1 bg-gray-900 border-t border-gray-800 text-xs text-gray-600">
-        <span>Phase 4 — 並列4視点ストリーミング</span>
+        <span>MVP</span>
         <span className="text-gray-700">|</span>
         <span>
           レンズ {state.lenses.length}本
