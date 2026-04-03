@@ -61,18 +61,18 @@ export default function LensSettingsModal({ lenses, onSave, onClose }: LensSetti
     <div
       ref={backdropRef}
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm dark:bg-black/60"
       role="dialog"
       aria-modal="true"
       aria-label="レンズ設定"
     >
-      <div className="flex flex-col w-full max-w-2xl max-h-[85vh] bg-gray-900 border border-gray-700 rounded-lg shadow-2xl">
+      <div className="flex flex-col w-full max-w-2xl max-h-[85vh] bg-white border border-gray-200 rounded-lg shadow-2xl dark:bg-gray-900 dark:border-gray-700">
         {/* ヘッダー */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
-          <h2 className="text-sm font-semibold text-gray-200">レンズ設定</h2>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-200">レンズ設定</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-300 transition-colors text-lg leading-none"
+            className="text-gray-500 hover:text-gray-800 transition-colors text-lg leading-none dark:hover:text-gray-300"
             aria-label="閉じる"
           >
             ×
@@ -84,7 +84,7 @@ export default function LensSettingsModal({ lenses, onSave, onClose }: LensSetti
           {draft.map((lens, index) => (
             <div
               key={lens.id}
-              className="flex gap-3 p-3 rounded-md bg-gray-800/60 border border-gray-700"
+              className="flex gap-3 p-3 rounded-md bg-gray-50 border border-gray-200 dark:bg-gray-800/60 dark:border-gray-700"
             >
               {/* 色選択 */}
               <div className="flex flex-col gap-1.5 flex-none">
@@ -99,7 +99,7 @@ export default function LensSettingsModal({ lenses, onSave, onClose }: LensSetti
                       style={{ backgroundColor: COLOR_HEX[color] ?? '#888' }}
                       className={`w-4 h-4 rounded-full transition-transform ${
                         lens.accentColor === color
-                          ? 'ring-2 ring-white ring-offset-1 ring-offset-gray-800 scale-110'
+                          ? 'ring-2 ring-gray-900 ring-offset-1 ring-offset-white scale-110 dark:ring-white dark:ring-offset-gray-800'
                           : 'opacity-60 hover:opacity-100'
                       }`}
                     />
@@ -116,7 +116,7 @@ export default function LensSettingsModal({ lenses, onSave, onClose }: LensSetti
                     value={lens.name}
                     onChange={(e) => updateLens(index, { name: e.target.value })}
                     maxLength={24}
-                    className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200 outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 outline-none focus:border-blue-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200"
                     placeholder="レンズ名"
                   />
                 </div>
@@ -126,7 +126,7 @@ export default function LensSettingsModal({ lenses, onSave, onClose }: LensSetti
                     value={lens.description}
                     onChange={(e) => updateLens(index, { description: e.target.value })}
                     rows={3}
-                    className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-xs text-gray-300 outline-none focus:border-blue-500 resize-none leading-relaxed"
+                    className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-xs text-gray-800 outline-none focus:border-blue-500 resize-none leading-relaxed dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
                     placeholder="AI への指示（視点・着眼点など）"
                     spellCheck={false}
                   />
@@ -137,17 +137,17 @@ export default function LensSettingsModal({ lenses, onSave, onClose }: LensSetti
         </div>
 
         {/* フッター */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-800">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-800">
           <button
             onClick={resetToDefaults}
-            className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+            className="text-xs text-gray-500 hover:text-gray-800 transition-colors dark:hover:text-gray-300"
           >
             デフォルトに戻す
           </button>
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-3 py-1.5 text-xs rounded bg-gray-800 text-gray-400 hover:bg-gray-700 transition-colors"
+              className="px-3 py-1.5 text-xs rounded bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
             >
               キャンセル
             </button>

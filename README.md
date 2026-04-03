@@ -18,19 +18,15 @@ npm install
 フロントは Vite（既定ポート `5173`）。`vite.config.ts` で `/api` が `http://localhost:8788` にプロキシされます。API は Cloudflare Pages Functions 相当のため、**ビルド済みの `dist` を Wrangler で起動**する必要があります。
 
 1. **ターミナル A**: ビルドして Pages 開発サーバーを起動する。
-
-   ```bash
+  ```bash
    npm run build
    npm run pages:dev
-   ```
-
+  ```
    （`wrangler pages dev dist --port 8788` と同等）
-
 2. **ターミナル B**: Vite の開発サーバーを起動する。
-
-   ```bash
+  ```bash
    npm run dev
-   ```
+  ```
 
 ブラウザで Vite の URL（例: `http://localhost:5173`）を開き、`/api` へのリクエストはプロキシ経由で 8788 に届きます。
 
@@ -38,11 +34,13 @@ npm install
 
 ## Cloudflare Pages の環境変数
 
-| 変数 | 必須 | 説明 |
-|------|------|------|
-| `ZAI_API_KEY` | はい | 生成 API 用のキー（本番は `wrangler secret put ZAI_API_KEY` などで設定） |
-| `ZAI_API_BASE_URL` | いいえ | API のベース URL（未設定時は Zhipu の既定エンドポイント） |
-| `ZAI_MODEL` | いいえ | 利用モデル（未設定時は `glm-4-flash`） |
+
+| 変数                 | 必須  | 説明                                                       |
+| ------------------ | --- | -------------------------------------------------------- |
+| `ZAI_API_KEY`      | はい  | 生成 API 用のキー（本番は `wrangler secret put ZAI_API_KEY` などで設定） |
+| `ZAI_API_BASE_URL` | いいえ | API のベース URL（未設定時は Zhipu の既定エンドポイント）                     |
+| `ZAI_MODEL`        | いいえ | 利用モデル（未設定時は `glm-4-flash`）                               |
+
 
 ## デプロイ
 
