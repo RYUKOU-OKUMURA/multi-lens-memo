@@ -38,8 +38,8 @@ npm install
 | 変数                 | 必須  | 説明                                                       |
 | ------------------ | --- | -------------------------------------------------------- |
 | `ZAI_API_KEY`      | はい  | 生成 API 用のキー（本番は `wrangler secret put ZAI_API_KEY` などで設定） |
-| `ZAI_API_BASE_URL` | いいえ | API のベース URL（未設定時は Zhipu の既定エンドポイント）                     |
-| `ZAI_MODEL`        | いいえ | 利用モデル（未設定時は `glm-4-flash`）                               |
+| `ZAI_API_BASE_URL` | いいえ | 未設定時は `https://open.bigmodel.cn/api/paas/v4`。**GLM-5.1（Coding Plan）** の例では `https://open.bigmodel.cn/api/coding/paas/v4` を使います。 |
+| `ZAI_MODEL`        | いいえ | 未設定時は `glm-4.7-flash`。**GLM-5.1** は coding 用 URL とセットで `GLM-5.1` とする例が多いです。標準 URL のみのときはコンソールの「模型代码」（例: `glm-5`）に合わせてください。 |
 
 
 ## デプロイ

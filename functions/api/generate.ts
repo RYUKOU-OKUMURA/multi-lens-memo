@@ -41,7 +41,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const baseUrl =
     env.ZAI_API_BASE_URL ?? "https://open.bigmodel.cn/api/paas/v4";
-  const model = env.ZAI_MODEL ?? "glm-4-flash";
+  /** 智谱側で旧名が無効化されることがある（1211 模型不存在）。公式の無料 Flash は glm-4.7-flash。 */
+  const model = env.ZAI_MODEL ?? "glm-4.7-flash";
 
   // --- リクエストボディのパース ---
   let body: GenerateRequestBody;
@@ -83,16 +84,21 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return jsonError(`GLM API への接続に失敗しました: ${message}`, 502);
   }
 
-  // --- アップストリームエラーをそのまま返す（body はここで一度だけ消費） ---
+  // --- アップストリームエラー（GLM が 400/401 等を返すと wrangler も同じステータスに見える） ---
   if (!upstream.ok) {
     const errorText = await upstream.text();
-    return new Response(errorText, {
-      status: upstream.status,
-      headers: {
-        ...CORS_HEADERS,
-        "Content-Type": "application/json",
+    return new Response(
+      JSON.stringify({
+        error: `GLM API エラー (${upstream.status}): ${errorText.slice(0, 2000)}`,
+      }),
+      {
+        status: upstream.status,
+        headers: {
+          ...CORS_HEADERS,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
   }
 
   const streamBody = upstream.body;
