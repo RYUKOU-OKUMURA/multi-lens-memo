@@ -1,11 +1,18 @@
 import TextInput from './TextInput'
+import ContextFileImport from './ContextFileImport'
 
 interface ContextPanelProps {
   value: string
   onChange: (value: string) => void
+  /** 生成中など、ファイル読み込みを無効にする */
+  fileImportDisabled?: boolean
 }
 
-export default function ContextPanel({ value, onChange }: ContextPanelProps) {
+export default function ContextPanel({
+  value,
+  onChange,
+  fileImportDisabled = false,
+}: ContextPanelProps) {
   return (
     <section className="flex flex-col w-64 flex-none bg-white border-r border-gray-200 dark:bg-gray-950 dark:border-gray-800">
       <div className="flex-none px-3 py-2 border-b border-gray-200 dark:border-gray-800">
@@ -18,7 +25,7 @@ export default function ContextPanel({ value, onChange }: ContextPanelProps) {
           </span>
         )}
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <ContextFileImport onImported={onChange} disabled={fileImportDisabled}>
         <TextInput
           value={value}
           onChange={onChange}
@@ -26,7 +33,7 @@ export default function ContextPanel({ value, onChange }: ContextPanelProps) {
           className="p-3"
           aria-label="コンテキスト素材入力"
         />
-      </div>
+      </ContextFileImport>
     </section>
   )
 }

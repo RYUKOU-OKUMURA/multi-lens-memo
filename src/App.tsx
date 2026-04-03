@@ -122,7 +122,11 @@ export default function App() {
 
       {/* メインカラムエリア */}
       <main className="flex flex-1 overflow-hidden">
-        <ContextPanel value={state.context} onChange={setContext} />
+        <ContextPanel
+          value={state.context}
+          onChange={setContext}
+          fileImportDisabled={isGenerating}
+        />
         {state.showSelfMemo && (
           <UserMemo value={state.selfMemo} onChange={setSelfMemo} />
         )}
