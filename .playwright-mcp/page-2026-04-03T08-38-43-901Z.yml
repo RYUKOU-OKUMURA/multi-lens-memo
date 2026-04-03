@@ -1,0 +1,29 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "Multi-Lens Memo多視点メモ" [level=1] [ref=e5]
+    - generic [ref=e6]:
+      - button "レンズ設定" [ref=e7] [cursor=pointer]
+      - button "自分メモ OFF" [ref=e8] [cursor=pointer]
+      - button "生成" [disabled] [ref=e9]
+      - button "MD DL" [disabled] [ref=e10]
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e13]: コンテキスト
+      - textbox "コンテキスト素材入力" [ref=e15]:
+        - /placeholder: "素材テキストをここに貼り付ける…\n\n文字起こし・Markdown など"
+    - generic [ref=e16]:
+      - generic [ref=e18]: 当事者／観客
+      - paragraph [ref=e20]: 生成ボタンで AI メモがここにストリーミング表示されます
+    - generic [ref=e21]:
+      - generic [ref=e23]: ディレクター
+      - paragraph [ref=e25]: 生成ボタンで AI メモがここにストリーミング表示されます
+    - generic [ref=e26]:
+      - generic [ref=e28]: プロデューサー
+      - paragraph [ref=e30]: 生成ボタンで AI メモがここにストリーミング表示されます
+    - generic [ref=e31]:
+      - generic [ref=e33]: 歴史家／文脈
+      - paragraph [ref=e35]: 生成ボタンで AI メモがここにストリーミング表示されます
+  - contentinfo [ref=e36]:
+    - generic [ref=e37]: MVP
+    - generic [ref=e38]: "|"
+    - generic [ref=e39]: レンズ 4本
