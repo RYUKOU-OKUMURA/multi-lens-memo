@@ -26,3 +26,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Cursor debug NDJSON (session logs; do not commit)
+.cursor/debug-*.log
