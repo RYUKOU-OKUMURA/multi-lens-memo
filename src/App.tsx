@@ -72,14 +72,14 @@ export default function App() {
 
   function handleGenerate() {
     if (!isGenerating && state.context.trim().length > 0) {
-      // 出力をリセットしてから並列ストリーミング開始
+      // 出力をリセットしてから順次ストリーミング開始
       setState((s) => ({
         ...s,
         outputs: Object.fromEntries(
           s.lenses.map((l) => [l.id, { lensId: l.id, content: '', status: 'idle' as const }]),
         ),
       }))
-      generateAll(state.lenses, state.context)
+      void generateAll(state.lenses, state.context)
     }
   }
 

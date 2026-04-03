@@ -1,11 +1,22 @@
 import { useCallback, useRef } from 'react'
 import type { Lens, LensOutput } from '../types'
+import { DEFAULT_LENSES } from '../lib/lenses'
 
 type SetOutput = (lensId: string, updater: (prev: LensOutput) => LensOutput) => void
+
+/** localStorage の欠損などで description が空のときも API に必ず非空文字列を送る */
+function resolveSystemPrompt(lens: Lens): string {
+  const raw = lens.description
+  if (typeof raw === 'string' && raw.trim().length > 0) return raw
+  const fallback = DEFAULT_LENSES.find((d) => d.id === lens.id)?.description
+  if (fallback && fallback.trim().length > 0) return fallback
+  return '与えられた素材に基づき、この視点でメモを書いてください。'
+}
 
 /**
  * 1視点分の SSE ストリーミングを管理するカスタムフック。
  * - 各レンズは独立して動作し、1つが失敗しても他には影響しない。
+ * - 「全レンズ生成」は API レート制限を避けるため順次実行する。
  * - AbortController でキャンセル可能。
  */
 export function useStreamingLens(setOutput: SetOutput) {
@@ -26,10 +37,16 @@ export function useStreamingLens(setOutput: SetOutput) {
       }))
 
       try {
+        const systemPrompt = resolveSystemPrompt(lens)
+        // undefined は JSON.stringify でキーごと落ちるため常に文字列化する
+        const payload = JSON.stringify({
+          material: String(material ?? ''),
+          systemPrompt: String(systemPrompt ?? ''),
+        })
         const response = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ material, systemPrompt: lens.description }),
+          body: payload,
           signal: controller.signal,
         })
 
@@ -100,11 +117,11 @@ export function useStreamingLens(setOutput: SetOutput) {
     [setOutput],
   )
 
-  /** 全レンズを並列で生成開始 */
+  /** 全レンズを順に生成（同時多発は智谱の 429 になりやすい） */
   const generateAll = useCallback(
-    (lenses: Lens[], material: string) => {
+    async (lenses: Lens[], material: string) => {
       for (const lens of lenses) {
-        void generateLens(lens, material)
+        await generateLens(lens, material)
       }
     },
     [generateLens],

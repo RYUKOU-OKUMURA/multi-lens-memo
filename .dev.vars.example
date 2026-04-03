@@ -8,5 +8,16 @@ ZAI_API_KEY=your_api_key_here
 # オプション: API ベース URL（デフォルト: https://open.bigmodel.cn/api/paas/v4）
 # ZAI_API_BASE_URL=https://open.bigmodel.cn/api/paas/v4
 
-# オプション: 使用するモデル名（デフォルト: glm-4-flash）
-# ZAI_MODEL=glm-4-flash
+# オプション: 使用するモデル名（未設定時のデフォルトは glm-4.7-flash）
+# ZAI_MODEL=glm-4.7-flash
+
+# --- GLM-5.1（Coding Plan）を使う場合の例 ---
+# 「coding」は中国アカウント限定ではなく、公式が区別している「编码套餐用エンドポイント」です。
+# 日本で登録したアカウントでも、ドキュメントどおり open.bigmodel.cn を使うのが一般的です（別ホストのグローバル専用 URL は公開ドキュメントに明記されていません）。
+# コンソールの「Coding Plan」向けドキュメントでは、ベース URL が **coding** 用になります。
+# 既定の paas/v4 のまま GLM-5.1 だけ指定すると、1211（模型不存在）になることがあります。
+# ZAI_API_BASE_URL=https://open.bigmodel.cn/api/coding/paas/v4
+# ZAI_MODEL=GLM-5.1
+#
+# 標準の chat/completions（/api/paas/v4）では、模型代码は小文字の例が多いです（例: glm-5, glm-5.1）。
+# 400 が出る場合は open.bigmodel.cn の該当モデルページの「调用示例」の model をそのままコピーしてください。
