@@ -9,6 +9,7 @@ import MemoToggle from './components/MemoToggle'
 import ExportButton from './components/ExportButton'
 import LensConfig from './components/LensConfig'
 import ThemeToggle from './components/ThemeToggle'
+import ResizeHandle from './components/ResizeHandle'
 
 function buildInitialState(): AppState {
   const lenses = loadLenses()
@@ -23,9 +24,14 @@ function buildInitialState(): AppState {
   }
 }
 
+const MIN_PANEL_WIDTH = 140
+const MAX_PANEL_WIDTH = 600
+
 export default function App() {
   const [state, setState] = useState<AppState>(() => buildInitialState())
   const [showLensConfig, setShowLensConfig] = useState(false)
+  const [contextWidth, setContextWidth] = useState(256)
+  const [memoWidth, setMemoWidth] = useState(224)
 
   function setContext(context: string) {
     setState((s) => ({ ...s, context }))
@@ -70,6 +76,14 @@ export default function App() {
 
   const isGenerating = Object.values(state.outputs).some((o) => o.status === 'streaming')
 
+  function resizeContext(delta: number) {
+    setContextWidth((w) => Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, w + delta)))
+  }
+
+  function resizeMemo(delta: number) {
+    setMemoWidth((w) => Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, w + delta)))
+  }
+
   function handleGenerate() {
     if (!isGenerating && state.context.trim().length > 0) {
       // 出力をリセットしてから順次ストリーミング開始
@@ -87,16 +101,16 @@ export default function App() {
     <div className="flex flex-col h-full">
       {/* ヘッダー */}
       <header className="flex-none flex items-center justify-between px-4 py-2 bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
-        <h1 className="text-sm font-semibold tracking-wide text-gray-900 dark:text-gray-200">
+        <h1 className="text-base font-semibold tracking-wide text-gray-900 dark:text-gray-200">
           Multi-Lens Memo
-          <span className="ml-2 text-xs text-gray-500 font-normal">多視点メモ</span>
+          <span className="ml-2 text-sm text-gray-500 font-normal">多視点メモ</span>
         </h1>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
             onClick={() => setShowLensConfig(true)}
             disabled={isGenerating}
-            className={`px-3 py-1 text-xs rounded transition-colors ${
+            className={`px-3 py-1 text-sm rounded transition-colors ${
               isGenerating
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 cursor-pointer dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200'
@@ -108,7 +122,7 @@ export default function App() {
           <button
             onClick={handleGenerate}
             disabled={isGenerating || state.context.trim().length === 0}
-            className={`px-3 py-1 text-xs rounded transition-colors ${
+            className={`px-3 py-1 text-sm rounded transition-colors ${
               isGenerating || state.context.trim().length === 0
                 ? 'bg-blue-100 text-blue-300 cursor-not-allowed dark:bg-blue-900/40 dark:text-blue-500'
                 : 'bg-blue-600 text-white hover:bg-blue-500 cursor-pointer'
@@ -126,9 +140,14 @@ export default function App() {
           value={state.context}
           onChange={setContext}
           fileImportDisabled={isGenerating}
+          width={contextWidth}
         />
+        <ResizeHandle onResize={resizeContext} />
         {state.showSelfMemo && (
-          <UserMemo value={state.selfMemo} onChange={setSelfMemo} />
+          <>
+            <UserMemo value={state.selfMemo} onChange={setSelfMemo} width={memoWidth} />
+            <ResizeHandle onResize={resizeMemo} />
+          </>
         )}
         <LensGrid lenses={state.lenses} outputs={state.outputs} />
       </main>
@@ -143,7 +162,7 @@ export default function App() {
       )}
 
       {/* ステータスバー */}
-      <footer className="flex-none flex items-center gap-4 px-4 py-1 bg-white border-t border-gray-200 text-xs text-gray-500 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-600">
+      <footer className="flex-none flex items-center gap-4 px-4 py-1 bg-white border-t border-gray-200 text-sm text-gray-500 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-600">
         <span>MVP</span>
         <span className="text-gray-300 dark:text-gray-700">|</span>
         <span>
